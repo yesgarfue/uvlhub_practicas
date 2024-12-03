@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-and-copy-docs:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       # Paso 1: Checkout del código
@@ -40,7 +40,7 @@ jobs:
 
       # Paso 6: Publicar los archivos generados como artefactos (opcional para verificar)
       - name: Upload Documentation Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: documentation
           path: public/docs
