@@ -1,0 +1,46 @@
+name: Generate and Copy Documentation
+
+on:
+  push:
+    branches:
+      - main  # Ejecutar este workflow en cada push a la rama principal
+
+jobs:
+  build-and-copy-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Paso 1: Checkout del código
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Paso 2: Configuración del entorno de Python
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.12.3'
+
+      # Paso 3: Instalación de dependencias para Sphinx
+      - name: Install dependencies
+        run: |
+          pip install sphinx sphinx_rtd_theme
+
+      # Paso 4: Generar documentación
+      - name: Build Documentation
+        run: |
+          cd docs
+          make html
+
+      # Paso 5: Crear y copiar los archivos generados a un directorio público
+      - name: Copy Documentation to Public Folder
+        run: |
+          PUBLIC_DIR="public/docs"
+          mkdir -p $PUBLIC_DIR
+          cp -r docs/build/html/* $PUBLIC_DIR
+
+      # Paso 6: Publicar los archivos generados como artefactos (opcional para verificar)
+      - name: Upload Documentation Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: documentation
+          path: public/docs
