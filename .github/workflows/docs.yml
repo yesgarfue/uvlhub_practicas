@@ -25,15 +25,7 @@ jobs:
         run: |
           pip install sphinx sphinx_rtd_theme
 
-      # Paso 4: Generar la documentación
+      # Paso 4: Generar la documentación directamente en la carpeta /docs
       - name: Build Documentation
         run: |
-          cd docs
-          make html
-
-      # Paso 5: Publicar los archivos generados como artefactos (opcional)
-      - name: Upload Documentation Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: documentation
-          path: docs/build/html/
+          sphinx-build -b html docs/source docs
