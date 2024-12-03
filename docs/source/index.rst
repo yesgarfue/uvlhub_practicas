@@ -3,15 +3,15 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-uvlhub_practicas documentation
-==============================
+Documentación del Proyecto
+==========================
 
-Add your content using ``reStructuredText`` syntax. See the
-`reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_
-documentation for details.
-
+Bienvenidos a la documentación del proyecto de Pescaito-Hub
 
 .. toctree::
    :maxdepth: 2
-   :caption: Contents:
+   :caption: Contenidos:
 
+   miembros
+   milestones
+   mejoras
