@@ -61,7 +61,6 @@ jobs:
         MARIADB_TEST_DATABASE: uvlhubdb_test
         MARIADB_USER: uvlhub_user
         MARIADB_PASSWORD: uvlhub_password
-        TELEGRAM_BOT_TOKEN: 7318289178:AAGlwhBrbP-6RVSpx67k-B1izPLZYMIrRO0
       run: |
         pytest app/modules/ --ignore-glob='*selenium*'
 
