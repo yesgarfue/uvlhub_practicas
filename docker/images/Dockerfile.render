@@ -18,9 +18,11 @@ RUN apt-get clean \
 WORKDIR /app
 
 # Copy files
-COPY app/ ./app
-COPY core/ ./core
-COPY migrations/ ./migrations
+COPY ./app /app/app
+COPY ./core /app/core
+COPY ./migrations /app/migrations
+COPY ./scripts/wait-for-db.sh /app/scripts/wait-for-db.sh
+COPY ./docker/entrypoints/render_entrypoint.sh /app/render_entrypoint.sh
 
 # Copy requirements.txt into the working directory /app
 COPY requirements.txt .
@@ -30,11 +32,9 @@ RUN find . -type d -name "__pycache__" -exec rm -r {} + && \
     find . -type f -name "*.pyc" -exec rm -f {} +
 
 # Copy entrypoint and set execution permissions
-COPY docker/entrypoints/render_entrypoint.sh /app/render_entrypoint.sh
 RUN chmod +x /app/render_entrypoint.sh
 
 # Ejemplo explícito de copia en Dockerfile
-COPY ./scripts/wait-for-db.sh /app/scripts/wait-for-db.sh
 RUN chmod +x /app/scripts/wait-for-db.sh
 
 # Create the .moduleignore file with the module 'webhook' inside
