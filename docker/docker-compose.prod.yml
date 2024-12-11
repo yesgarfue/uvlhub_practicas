@@ -2,7 +2,9 @@ services:
 
   web:
     container_name: web_app_container
-    image: drorganvidez/uvlhub:latest
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.render
     env_file:
       - ../.env
     ports:
