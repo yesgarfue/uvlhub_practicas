@@ -33,8 +33,8 @@ RUN find . -type d -name "__pycache__" -exec rm -r {} + && \
 COPY docker/entrypoints/render_entrypoint.sh /app/render_entrypoint.sh
 RUN chmod +x /app/render_entrypoint.sh
 
-# Copy the wait-for-db.sh script and set execution permissions
-COPY scripts/wait-for-db.sh /app/scripts/wait-for-db.sh
+# Ejemplo explícito de copia en Dockerfile
+COPY ./scripts/wait-for-db.sh /app/scripts/wait-for-db.sh
 RUN chmod +x /app/scripts/wait-for-db.sh
 
 # Create the .moduleignore file with the module 'webhook' inside
