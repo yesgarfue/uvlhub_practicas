@@ -1,43 +1,67 @@
-# This workflow uses actions that are not certified by GitHub.
-# They are provided by a third-party and are governed by
-# separate terms of service, privacy policy, and support
-# documentation.
-
-# GitHub recommends pinning actions to a commit SHA.
-# To get a newer version, you will need to update the SHA.
-# You can also reference a tag or branch, but the action may change without warning.
-
-name: Publish image in Docker Hub
+name: Deploy to Docker Hub and Render
 
 on:
   release:
     types: [published]
 
 jobs:
-  push_to_registry:
-    name: Push Docker image to Docker Hub
+  build_and_push_db:
+    name: Build and Push MariaDB Image
     runs-on: ubuntu-latest
     steps:
-      - name: Check out the repo
+      - name: Check out repository
         uses: actions/checkout@v3
 
       - name: Log in to Docker Hub
-        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and push Docker image
-        run: docker build --build-arg VERSION_TAG=${{ github.event.release.tag_name }} -t drorganvidez/uvlhub:${{ github.event.release.tag_name }} -f docker/images/Dockerfile.prod .
-        env:
-          DOCKER_CLI_EXPERIMENTAL: enabled
-
-      - name: Push Docker image to Docker Hub
-        run: docker push drorganvidez/uvlhub:${{ github.event.release.tag_name }}
-
-      - name: Tag and push latest
+      - name: Build MariaDB Image
         run: |
-          docker tag drorganvidez/uvlhub:${{ github.event.release.tag_name }} drorganvidez/uvlhub:latest
-          docker push drorganvidez/uvlhub:latest
-        env:
-          DOCKER_CLI_EXPERIMENTAL: enabled
+          docker build -t ${{ secrets.DOCKER_USER }}/mariadb:latest -f docker/images/Dockerfile.mariadb .
+
+      - name: Push MariaDB Image
+        run: |
+          docker push ${{ secrets.DOCKER_USER }}/mariadb:latest
+
+  build_and_push_app:
+    name: Build and Push Application Image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build Application Image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USER }}/application:latest -f docker/images/Dockerfile.prod .
+
+      - name: Push Application Image
+        run: |
+          docker push ${{ secrets.DOCKER_USER }}/application:latest
+
+  deploy_to_render:
+    name: Deploy to Render
+    needs: [build_and_push_db, build_and_push_app]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render Deployment (Database)
+        run: |
+          curl -X POST \
+            -H "Accept: application/json" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            https://api.render.com/v1/services/srv-ctchkaq3esus73bg2m0g/deploys/dep-ctchlf5ds78s739e8s3g/deploys
+
+      - name: Trigger Render Deployment (Application)
+        run: |
+          curl -X POST \
+            -H "Accept: application/json" \
+            -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+            https://api.render.com/v1/services/<APPLICATION_SERVICE_ID>/deploys
