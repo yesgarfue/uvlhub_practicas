@@ -18,14 +18,13 @@ RUN apt-get clean \
 WORKDIR /app
 
 # Copy files
+# Rutas absolutas para asegurar que Docker encuentre los archivos
 COPY ./app /app/app
 COPY ./core /app/core
 COPY ./migrations /app/migrations
 COPY ./scripts/wait-for-db.sh /app/scripts/wait-for-db.sh
 COPY ./docker/entrypoints/render_entrypoint.sh /app/render_entrypoint.sh
-
-# Copy requirements.txt into the working directory /app
-COPY requirements.txt .
+COPY ./requirements.txt /app/requirements.txt
 
 # Removes cache at the build stage
 RUN find . -type d -name "__pycache__" -exec rm -r {} + && \
